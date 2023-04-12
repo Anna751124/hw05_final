@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -71,12 +72,13 @@ class PostsURLTests(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
     def test_urls_redirect_anonymous(self):
-        """Страницы '/create/', '/posts/1/edit/', перенаправляют
+        """Страницы '/create/', '/posts/1/edit/','/posts/1/comment/'перенаправляют
         анонимного пользователя на страницу логина."""
         url_names = {
             reverse('posts:post_create'): 'posts/create_post.html',
             reverse('posts:post_edit', kwargs={'post_id': self.post.pk}): (
                 'posts/create_post.html'),
+            reverse('posts:add_comment', kwargs={'post_id': self.post.pk}): ('posts/post_detail.html')
         }
         for address in url_names:
             with self.subTest(address=address):
