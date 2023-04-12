@@ -167,8 +167,7 @@ class PostsPagesTests(TestCase):
             reverse('posts:index')
         )
         first_object = response.context['page_obj'][0]
-        self.assertEqual(first_object.text,
-                                 self.post.text)
+        self.assertEqual(first_object.text, self.post.text)
         self.assertEqual(first_object.image, self.post.image)
 
     def test_group_list_show_correct_context(self):
