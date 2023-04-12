@@ -60,6 +60,8 @@ class PostsPagesTests(TestCase):
             reverse('posts:post_edit', kwargs={'post_id': self.post.pk}): (
                 'posts/create_post.html'
             ),
+            reverse('posts:add_comment', kwargs={'post_id': self.post.pk}): (
+                'posts/post_detail.html'),
         }
         for reverse_name, template in pages_names_templates.items():
             with self.subTest(reverse_name=reverse_name):
