@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}
+ <title>Записи сообщества "Группа тайных поклонников графа."</title>
+{% endblock %}
+
+{% block header %}
+  {{group.title}}
+{% endblock %}
+
+{% block content %}
+{% for post in page_obj %}
+<h1> {{group.title}} </h1>
+<p> {{ group.description }} </p>
+<ul>
+    <li>
+        Автор: {{ post.author.get_full_name }}
+    </li>
+    <li>
+      Дата публикации: {{ post.pub_date|date:"d E Y" }}
+    </li>
+  </ul>
+<p>{{ post.text }}</p>
+{% if not forloop.last %}<hr>{% endif %}
+{% endfor %}
+{% endblock %} 
