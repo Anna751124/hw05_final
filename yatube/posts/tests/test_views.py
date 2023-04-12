@@ -28,7 +28,7 @@ class PostsPagesTests(TestCase):
             text='Текст',
             author=cls.user,
             group=cls.group,
-            image = uploaded
+            image=upload_to
         )
         small_gif = (
             b'\x47\x49\x46\x38\x39\x61\x02\x00'
@@ -38,12 +38,12 @@ class PostsPagesTests(TestCase):
             b'\x02\x00\x01\x00\x00\x02\x02\x0C'
             b'\x0A\x00\x3B'
         )
-        uploaded = SimpleUploadedFile(
+        upload_to = SimpleUploadedFile(
             name='small.gif',
             content=small_gif,
             content_type='image/gif'
         )
-        cls.post.image = uploaded
+        cls.post.image = upload_to
         cls.post.save()
         cls.POST_CREATE_URL = reverse('posts:post_create')
         cls.POST_EDIT_URL = reverse(
