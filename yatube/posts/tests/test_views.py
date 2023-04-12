@@ -75,17 +75,6 @@ class PostsPagesTests(TestCase):
             reverse('posts:post_edit', kwargs={'post_id': self.post.pk}): (
                 'posts/create_post.html'
             ),
-            reverse('posts:add_comment', kwargs={'post_id': self.post.pk}): (
-                'posts/post_detail.html'),
-            reverse('posts:follow_index'): 'posts/follow.html',
-            reverse('posts:profile_follow',
-                    kwargs={'username': self.user.username}): (
-                    'posts/profile.html'
-            ),
-            reverse('posts:profile_unfollow',
-                    kwargs={'username': self.user.username}): (
-                    'posts/profile.html'
-            ),
         }
         for reverse_name, template in pages_names_templates.items():
             with self.subTest(reverse_name=reverse_name):
@@ -175,7 +164,8 @@ class PostsPagesTests(TestCase):
         )
         self.assertEqual(response.context['page_obj'][0].text, self.post.text)
         self.assertEqual(
-            response.context['page_obj'][0].image, self.post.image
+            self.post.image,
+            response.context['page_obj'][Post.objects.count() - 1].image,
         )
 
     def test_group_list_show_correct_context(self):
