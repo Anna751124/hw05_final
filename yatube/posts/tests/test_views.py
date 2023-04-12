@@ -173,8 +173,7 @@ class PostsPagesTests(TestCase):
         response = self.authorized_client.get(
             reverse('posts:index')
         )
-        first_object = response.context['page_obj'][0]
-        self.assertEqual(first_object.text, self.post.text)
+        self.assertEqual(response.context['page_obj'][0].text, self.post.text)
         self.assertEqual(
             response.context['page_obj'][0].image, self.post.image
         )
