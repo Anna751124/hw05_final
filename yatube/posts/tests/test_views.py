@@ -7,7 +7,7 @@ from django.urls import reverse
 from django import forms
 
 
-from ..models import Comment, Follow, Group, Post
+from posts.models import Comment, Follow, Group, Post
 
 User = get_user_model()
 
@@ -149,7 +149,7 @@ class PostsPagesTests(TestCase):
             reverse('posts:index')
         )
         self.assertEqual(
-             len(response.context["page_obj"]), settings.TEST_POST_COUNT)
+            len(response.context["page_obj"]), settings.TEST_POST_COUNT)
         self.assertEqual(
             self.post.image,
             response.context['page_obj'][Post.objects.count() - 1].image,
@@ -176,7 +176,7 @@ class PostsPagesTests(TestCase):
             reverse('posts:profile', kwargs={'username': self.user.username})
         )
         self.assertEqual(
-             len(response.context["page_obj"]), settings.TEST_POST_COUNT) 
+            len(response.context["page_obj"]), settings.TEST_POST_COUNT)
         self.assertEqual(
             response.context['author'], self.user
         )
