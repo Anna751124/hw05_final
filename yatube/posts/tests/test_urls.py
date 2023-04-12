@@ -80,7 +80,7 @@ class PostsURLTests(TestCase):
             reverse('posts:post_edit', kwargs={'post_id': self.post.pk}): (
                 'posts/create_post.html'),
             reverse('posts:add_comment', kwargs={'post_id': self.post.pk}): (
-            'posts/post_detail.html'),
+                'posts/post_detail.html'),
         }
         for address in url_names:
             with self.subTest(address=address):
