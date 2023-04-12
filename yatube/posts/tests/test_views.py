@@ -41,7 +41,7 @@ class PostsPagesTests(TestCase):
         self.urls_templates_data = [
             (PostsPagesTests.POST_CREATE_URL, 'posts/create_post.html'),
             (PostsPagesTests.POST_EDIT_URL, 'posts/create_post.html')
-        ] 
+        ]
 
     def test_pages_uses_correct_template(self):
         """Во view-функциях используются соответствующие шаблоны."""
@@ -68,7 +68,7 @@ class PostsPagesTests(TestCase):
             with self.subTest(reverse_name=reverse_name):
                 response = self.authorized_client.get(reverse_name)
                 self.assertTemplateUsed(response, template)
-    
+
     def form_fields_is_valid(self, url):
         response = PostsPagesTests.authorized_client.get(url)
         form_fields = {
@@ -78,11 +78,11 @@ class PostsPagesTests(TestCase):
         for value, expected in form_fields.items():
             with self.subTest(value=value):
                 form_field = response.context.get('form').fields.get(value)
-                self.assertIsInstance(form_field, expected) 
+                self.assertIsInstance(form_field, expected)
 
     def test_post_create_show_correct_context(self):
         """Шаблон post_create сформирован с правильным контекстом."""
-        self.form_fields_is_valid(PostsPagesTests.POST_CREATE_URL) 
+        self.form_fields_is_valid(PostsPagesTests.POST_CREATE_URL)
 
     def test_post_edit_show_correct_context(self):
         """Шаблон post_edit сформирован с правильным контекстом."""
