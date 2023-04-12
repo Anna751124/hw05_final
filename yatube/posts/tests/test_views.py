@@ -17,6 +17,7 @@ class PostsPagesTests(TestCase):
         cls.user = User.objects.create_user(username='test-author')
         cls.authorized_client = Client()
         cls.authorized_client.force_login(cls.user)
+        cls.follow_author = User.objects.create_user(username='follow-author')
         cls.group = Group.objects.create(
             title='Тестовая группа',
             slug='test-slug',
