@@ -148,8 +148,8 @@ class PostsPagesTests(TestCase):
             reverse('posts:index')
         )
         first_object = response.context['page_obj'][0]
-        text = first_object.text 
-        self.assertEqual(text, self.post.text) 
+        text = first_object.text
+        self.assertEqual(text, self.post.text)
         self.assertEqual(
             self.post.image,
             response.context['page_obj'][Post.objects.count() - 1].image,
