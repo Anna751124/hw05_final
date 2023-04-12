@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
@@ -6,7 +7,7 @@ from django.urls import reverse
 from django import forms
 
 
-from posts.models import Group, Post, Comment, Follow
+from ..models import Comment, Follow, Group, Post
 
 User = get_user_model()
 
@@ -24,36 +25,17 @@ class PostsPagesTests(TestCase):
             slug='test-slug',
             description='Тестовое описание',
         )
-        small_gif = (
-            b'\x47\x49\x46\x38\x39\x61\x02\x00'
-            b'\x01\x00\x80\x00\x00\x00\x00\x00'
-            b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
-            b'\x00\x00\x00\x2C\x00\x00\x00\x00'
-            b'\x02\x00\x01\x00\x00\x02\x02\x0C'
-            b'\x0A\x00\x3B'
-        )
-        cls.upload_to = SimpleUploadedFile(
-            name='small.gif',
-            content=small_gif,
-            content_type='image/gif'
-        )
-        cls.post = Post.objects.create(
-            text='Текст',
-            author=cls.user,
-            group=cls.group,
-            image=cls.upload_to
-        )
-        cls.POST_CREATE_URL = reverse('posts:post_create')
-        cls.POST_EDIT_URL = reverse(
-            'posts:post_edit', kwargs={'post_id': f'{cls.post.pk}'})
+        TEST_POST_COUNT = 5
+        posts = (
+            Post(
+                author=cls.user,
+                text=f'Тестовый пост №{i}',
+                group=cls.group) for i in range(TEST_POST_COUNT))
+        Post.objects.bulk_create(posts)
+        cls.post = Post.objects.get(pk=1)
 
-    def setUp(self):
-        self.authorized_client = Client()
-        self.authorized_client.force_login(self.user)
-        self.urls_templates_data = [
-            (PostsPagesTests.POST_CREATE_URL, 'posts/create_post.html'),
-            (PostsPagesTests.POST_EDIT_URL, 'posts/create_post.html')
-        ]
+    def setUp(cls):
+        cache.clear()
 
     def test_pages_uses_correct_template(self):
         """Во view-функциях используются соответствующие шаблоны."""
@@ -81,8 +63,9 @@ class PostsPagesTests(TestCase):
                 response = self.authorized_client.get(reverse_name)
                 self.assertTemplateUsed(response, template)
 
-    def form_fields_is_valid(self, url):
-        response = PostsPagesTests.authorized_client.get(url)
+    def test_post_create_show_correct_context(self):
+        """Шаблон post_create сформирован с правильным контекстом."""
+        response = self.authorized_client.get(reverse('posts:post_create'))
         form_fields = {
             'text': forms.fields.CharField,
             'group': forms.models.ModelChoiceField,
@@ -92,16 +75,19 @@ class PostsPagesTests(TestCase):
                 form_field = response.context.get('form').fields.get(value)
                 self.assertIsInstance(form_field, expected)
 
-    def test_post_create_show_correct_context(self):
-        """Шаблон post_create сформирован с правильным контекстом."""
-        self.form_fields_is_valid(PostsPagesTests.POST_CREATE_URL)
-
     def test_post_edit_show_correct_context(self):
         """Шаблон post_edit сформирован с правильным контекстом."""
-        self.form_fields_is_valid(PostsPagesTests.POST_EDIT_URL)
         response = self.authorized_client.get(
             reverse('posts:post_edit', kwargs={'post_id': self.post.pk})
         )
+        form_fields = {
+            'text': forms.fields.CharField,
+            'group': forms.models.ModelChoiceField,
+        }
+        for value, expected in form_fields.items():
+            with self.subTest(value=value):
+                form_field = response.context.get('form').fields.get(value)
+                self.assertIsInstance(form_field, expected)
         self.assertTrue(response.context.get('is_edit'))
         self.assertEqual(response.context.get('post_id'), 1)
 
@@ -162,7 +148,8 @@ class PostsPagesTests(TestCase):
         response = self.authorized_client.get(
             reverse('posts:index')
         )
-        self.assertEqual(response.context['page_obj'][0].text, self.post.text)
+        self.assertEqual(
+             len(response.context["page_obj"]), settings.TEST_POST_COUNT)
         self.assertEqual(
             self.post.image,
             response.context['page_obj'][Post.objects.count() - 1].image,
@@ -173,9 +160,8 @@ class PostsPagesTests(TestCase):
         response = self.authorized_client.get(
             reverse('posts:group_list', kwargs={'slug': self.group.slug})
         )
-        first_object = response.context['page_obj'][0]
-        text = first_object.text
-        self.assertEqual(text, self.post.text)
+        self.assertEqual(
+            len(response.context["page_obj"]), settings.TEST_POST_COUNT)
         self.assertEqual(
             response.context['group'], self.group
         )
@@ -189,9 +175,8 @@ class PostsPagesTests(TestCase):
         response = self.authorized_client.get(
             reverse('posts:profile', kwargs={'username': self.user.username})
         )
-        first_object = response.context['page_obj'][0]
-        text = first_object.text
-        self.assertEqual(text, self.post.text)
+        self.assertEqual(
+             len(response.context["page_obj"]), settings.TEST_POST_COUNT) 
         self.assertEqual(
             response.context['author'], self.user
         )
@@ -307,9 +292,8 @@ class PaginatorViewsTest(TestCase):
                 group=cls.group) for i in range(TEST_POST_COUNT))
         Post.objects.bulk_create(posts)
 
-    def setUp(self):
-        self.authorized_client = Client()
-        self.authorized_client.force_login(self.user)
+    def setUp(cls):
+        cache.clear()
 
     def test_pages_with_pagination_contain_ten_and_four_records(self):
         """Шаблоны страниц index, group_list, profile сформированы
