@@ -28,6 +28,7 @@ class PostsPagesTests(TestCase):
             text='Текст',
             author=cls.user,
             group=cls.group,
+            image = uploaded
         )
         small_gif = (
             b'\x47\x49\x46\x38\x39\x61\x02\x00'
@@ -80,6 +81,10 @@ class PostsPagesTests(TestCase):
                 'posts/post_detail.html'),
             reverse('posts:follow_index'): 'posts/follow.html',
             reverse('posts:profile_follow',
+                    kwargs={'username': self.user.username}): (
+                    'posts/profile.html'
+            ),
+            reverse('posts:profile_unfollow',
                     kwargs={'username': self.user.username}): (
                     'posts/profile.html'
             ),
