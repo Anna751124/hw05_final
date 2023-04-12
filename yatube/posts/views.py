@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_page
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Post, Group, User,  Follow
+from .models import Post, Group, User, Follow
 from .forms import PostForm, CommentForm
 from .paginator import paginate
 
@@ -105,6 +105,7 @@ def add_comment(request, post_id):
         comment.post = post
         comment.save()
     return redirect('posts:post_detail', post_id=post_id)
+
 
 @login_required
 def follow_index(request):

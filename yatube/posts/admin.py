@@ -17,7 +17,6 @@ class PostAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
-
 class CommentAdmin(admin.ModelAdmin):
     list_display = (
         'pk',
