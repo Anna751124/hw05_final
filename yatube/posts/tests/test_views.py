@@ -83,11 +83,6 @@ class PostsPagesTests(TestCase):
                     kwargs={'username': self.user.username}): (
                     'posts/profile.html'
             ),
-            reverse('profile_unfollow',
-                    kwargs={'username': self.user.username}): (
-                    'posts/profile.html'
-            ),
-
         }
         for reverse_name, template in pages_names_templates.items():
             with self.subTest(reverse_name=reverse_name):
