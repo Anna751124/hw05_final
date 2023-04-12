@@ -34,7 +34,7 @@ class PostsPagesTests(TestCase):
         cls.post = Post.objects.get(pk=1)
         cls.POST_CREATE_URL = reverse('posts:post_create')
         cls.POST_EDIT_URL = reverse(
-            'posts:post_edit', kwargs={'post_id': f'{cls.post.pk}'}) 
+            'posts:post_edit', kwargs={'post_id': f'{cls.post.pk}'})
 
     def setUp(self):
         cache.clear()
@@ -74,7 +74,7 @@ class PostsPagesTests(TestCase):
         form_fields = {
             'text': forms.fields.CharField,
             'group': forms.models.ModelChoiceField,
-        } 
+        }
         for value, expected in form_fields.items():
             with self.subTest(value=value):
                 form_field = response.context.get('form').fields.get(value)
