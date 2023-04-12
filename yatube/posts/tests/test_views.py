@@ -24,14 +24,11 @@ class PostsPagesTests(TestCase):
             slug='test-slug',
             description='Тестовое описание',
         )
-        TEST_POST_COUNT = 5
-        posts = (
-            Post(
-                author=cls.user,
-                text=f'Тестовый пост №{i}',
-                group=cls.group) for i in range(TEST_POST_COUNT))
-        Post.objects.bulk_create(posts)
-        cls.post = Post.objects.get(pk=1)
+        cls.post = Post.objects.create(
+            text='Текст',
+            author=cls.user,
+            group=cls.group,
+        )
         cls.POST_CREATE_URL = reverse('posts:post_create')
         cls.POST_EDIT_URL = reverse(
             'posts:post_edit', kwargs={'post_id': f'{cls.post.pk}'})
@@ -150,8 +147,9 @@ class PostsPagesTests(TestCase):
         response = self.authorized_client.get(
             reverse('posts:index')
         )
-        self.assertEqual(
-            len(response.context["page_obj"]), settings.TEST_POST_COUNT)
+        first_object = response.context['page_obj'][0]
+        text = first_object.text 
+        self.assertEqual(text, self.post.text) 
         self.assertEqual(
             self.post.image,
             response.context['page_obj'][Post.objects.count() - 1].image,
@@ -162,8 +160,9 @@ class PostsPagesTests(TestCase):
         response = self.authorized_client.get(
             reverse('posts:group_list', kwargs={'slug': self.group.slug})
         )
-        self.assertEqual(
-            len(response.context["page_obj"]), settings.TEST_POST_COUNT)
+        first_object = response.context['page_obj'][0]
+        text = first_object.text
+        self.assertEqual(text, self.post.text)
         self.assertEqual(
             response.context['group'], self.group
         )
@@ -177,8 +176,9 @@ class PostsPagesTests(TestCase):
         response = self.authorized_client.get(
             reverse('posts:profile', kwargs={'username': self.user.username})
         )
-        self.assertEqual(
-            len(response.context["page_obj"]), settings.TEST_POST_COUNT)
+        first_object = response.context['page_obj'][0]
+        text = first_object.text
+        self.assertEqual(text, self.post.text)
         self.assertEqual(
             response.context['author'], self.user
         )
