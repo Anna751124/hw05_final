@@ -218,7 +218,7 @@ class PostsPagesTests(TestCase):
         )
         self.assertEqual(response.content, new_response.content)
 
-    def test_follow_and_unfollow_author(self):
+    def test_follow_author(self):
         """Авторизованный пользователь может
         подписываться на других пользователей."""
         self.authorized_client.get(reverse(
@@ -228,14 +228,8 @@ class PostsPagesTests(TestCase):
         self.assertTrue(Follow.objects.filter(
             user=self.user, author=self.follow_author
         ).exists())
-
-    def test_follow_and_unfollow_author(self):
-        """Авторизованный пользователь может
-        удалять авторов из подписок."""
-        self.authorized_client.get(reverse(
-            'posts:profile_follow',
-            kwargs={'username': self.follow_author.username}
-        ))
+    
+    def test_unfollow_author(self):
         self.authorized_client.get(reverse(
             'posts:profile_unfollow',
             kwargs={'username': self.follow_author.username}
@@ -243,6 +237,7 @@ class PostsPagesTests(TestCase):
         self.assertFalse(Follow.objects.filter(
             user=self.user, author=self.follow_author
         ).exists())
+
 
     def test_new_post_in_correct_follow_pages(self):
         """Новая запись автора появляется в ленте подписчиков."""

@@ -93,7 +93,8 @@ def post_edit(request, post_id):
         'is_edit': is_edit,
         'post_id': post_id,
     }
-    return render(request, 'posts/create_post.html', context)
+    return render(request, 'posts/create_post.html', context) 
+    
 
 
 @login_required

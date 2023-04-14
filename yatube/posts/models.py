@@ -1,11 +1,13 @@
 from django.db import models
+from django.conf import settings
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
 
 class Post(models.Model):
-    text = models.TextField(verbose_name='Название публикации')
+    text = models.TextField(verbose_name='Название публикации',
+                            help_text='Текст поста')
     pub_date = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Дата публикации',)
@@ -19,11 +21,11 @@ class Post(models.Model):
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
-        related_name='posts', verbose_name='Группа'
+        related_name='posts', verbose_name='Группа',
+        help_text='Группа, к которой будет относиться пост'
     )
     image = models.ImageField(
         'Картинка',
-        upload_to='posts/',
         blank=True
     )
 
@@ -56,14 +58,21 @@ class Comment(models.Model):
         Post,
         on_delete=models.CASCADE,
         related_name='comments',
+        verbose_name='запись'
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='comments',
+        verbose_name='Автор'
     )
-    text = models.TextField()
-    created = models.DateTimeField(auto_now_add=True)
+    text = models.TextField(verbose_name='Комментарий',
+        help_text='Оставьте Ваш комментарий')
+    created = models.DateTimeField(auto_now_add=True, verbose_name='Дата публикации')
+
+    class Meta:
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
 
 
 class Follow(models.Model):
@@ -72,15 +81,19 @@ class Follow(models.Model):
         on_delete=models.CASCADE,
         related_name='follower',
         null=True,
+        verbose_name='Подписчик'
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='following',
         null=True,
+        verbose_name='Автор'
     )
 
     class Meta:
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'author'],
