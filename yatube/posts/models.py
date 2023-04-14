@@ -1,5 +1,4 @@
 from django.db import models
-from django.conf import settings
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -67,8 +66,9 @@ class Comment(models.Model):
         verbose_name='Автор'
     )
     text = models.TextField(verbose_name='Комментарий',
-        help_text='Оставьте Ваш комментарий')
-    created = models.DateTimeField(auto_now_add=True, verbose_name='Дата публикации')
+                            help_text='Оставьте Ваш комментарий')
+    created = models.DateTimeField(auto_now_add=True, 
+                                   verbose_name='Дата публикации')
 
     class Meta:
         verbose_name = 'Комментарий'

@@ -228,7 +228,7 @@ class PostsPagesTests(TestCase):
         self.assertTrue(Follow.objects.filter(
             user=self.user, author=self.follow_author
         ).exists())
-    
+
     def test_unfollow_author(self):
         self.authorized_client.get(reverse(
             'posts:profile_unfollow',
@@ -237,7 +237,6 @@ class PostsPagesTests(TestCase):
         self.assertFalse(Follow.objects.filter(
             user=self.user, author=self.follow_author
         ).exists())
-
 
     def test_new_post_in_correct_follow_pages(self):
         """Новая запись автора появляется в ленте подписчиков."""
