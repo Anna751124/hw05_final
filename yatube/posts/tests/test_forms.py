@@ -33,6 +33,7 @@ class PostFormTests(TestCase):
             group=cls.group,
         )
 
+
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
@@ -42,11 +43,11 @@ class PostFormTests(TestCase):
         """Валидная форма создает запись в Post."""
         posts_count = Post.objects.count()
         small_gif = (
-            b'\x47\x49\x46\x38\x39\x61\x02\x00'
-            b'\x01\x00\x80\x00\x00\x00\x00\x00'
-            b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
-            b'\x00\x00\x00\x2C\x00\x00\x00\x00'
-            b'\x02\x00\x01\x00\x00\x02\x02\x0C'
+            b'\x47\x49\x46\x38\x39\x61\x02\x00' 
+            b'\x01\x00\x80\x00\x00\x00\x00\x00' 
+            b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00' 
+            b'\x00\x00\x00\x2C\x00\x00\x00\x00' 
+            b'\x02\x00\x01\x00\x00\x02\x02\x0C' 
             b'\x0A\x00\x3B'
         )
         uploaded = SimpleUploadedFile(
@@ -78,6 +79,29 @@ class PostFormTests(TestCase):
                 author=self.user,
             ).exists()
         )
+    
+    def test_form_create_post_nekartinka(self):
+        not_image=b'small'
+        uploaded = SimpleUploadedFile(
+            name='small.docx',
+            content=not_image,
+            content_type='small'
+        )
+        form_data = {
+            'text': 'Тестовый текст',
+            'group': self.group.pk,
+            'image': uploaded,
+        }
+        response = self.authorized_client.post(
+            reverse('posts:post_create'),
+            data=form_data,
+            follow=False
+        )
+        error_text = ('Загрузите правильное изображение.' 
+                      ' Файл, который вы загрузили, поврежден'
+                       ' или не является изображением.')
+        self.assertFormError(response,'form','image', error_text)
+
 
     def test_form_edit_post(self):
         """Валидная форма изменяет запись в Post."""

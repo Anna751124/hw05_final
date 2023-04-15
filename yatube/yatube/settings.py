@@ -153,4 +153,3 @@ CACHES = {
     }
 }
 
-upload_to = 'posts/'
