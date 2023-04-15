@@ -85,7 +85,7 @@ class PostsURLTests(TestCase):
         for address in url_names:
             with self.subTest(address=address):
                 response = self.guest_client.get(address, follow=True)
-                redirect_url = '/auth/login/?next=' + address
+                redirect_url = reverse('users:login') + '?next='+ address
                 self.assertRedirects(response, redirect_url)
 
     def test_post_edit_url_redirect_non_author_authorized(self):
